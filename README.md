@@ -49,8 +49,19 @@ the following arguments on class instantiation:
                               venv_root => "/home/www-mgr/venv",
     }
 
+You can also provide Nginx and Monit specific settings:
+
+    class { "webapp::python": owner => "www-mgr",
+                              group => "www-mgr",
+                              src_root => "/home/www-mgr/src",
+                              venv_root => "/home/www-mgr/venv",
+                              nginx_workers => 2,
+                              monit_admin => "eivind@uggedal.com",
+                              monit_interval => 30,
+    }
+
 Note that you'll need to define a global search path for the `exec`
-resource to make the `python::webapp` resource function
+resource to make the `webapp::python::instance` resource function
 properly. This should ideally be placed in `manifests/site.pp`:
 
     Exec {
@@ -60,14 +71,14 @@ properly. This should ideally be placed in `manifests/site.pp`:
 The most basic setup of a Nginx virtualhost, virtualenv, Gunicorn installation
 inside the virtualenv, and Monit watching the Gunicorn processes:
     
-    python::webapp { "blog":
+    webapp::python::instance { "blog":
       domain => "blog.uggedal.com",
       wsgi_module => "blog:app",
     }
 
 You can provide domain aliases which Nginx redirects to your main domain:
 
-    python::webapp { "blog":
+    webapp::python::instance { "blog":
       domain => "blog.uggedal.com",
       aliases => ["journal.uggedal.com"],
       wsgi_module => "blog:app",
@@ -75,7 +86,7 @@ You can provide domain aliases which Nginx redirects to your main domain:
 
 If your application is busy you can increase the amount of Gunicorn workers:
 
-    python::webapp { "blog":
+    webapp::python::instance { "blog":
       domain => "blog.uggedal.com",
       wsgi_module => "blog:app",
       workers => 4,
@@ -84,7 +95,7 @@ If your application is busy you can increase the amount of Gunicorn workers:
 Django applications does not use the `wsgi_module`, but enabled by using the
 `django` flag:
 
-    python::webapp { "cms":
+    webapp::python::instance { "cms":
       domain => "cms.uggedal.com",
       django => true,
     }
@@ -92,7 +103,7 @@ Django applications does not use the `wsgi_module`, but enabled by using the
 Puppet can manage installation of requirements from a `requirements.txt`
 inside your source directory:
 
-    python::webapp { "cms":
+    webapp::python::instance { "cms":
       domain => "cms.uggedal.com",
       django => true,
       requirements => true,
