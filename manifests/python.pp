@@ -8,7 +8,7 @@ class webapp::python($owner="www-data",
 
   class { "nginx": workers => $nginx_workers }
   include python::dev
-  include python::venv
+  class { "python::venv": owner => $owner, group => $group }
   class { "python::gunicorn": owner => $owner, group => $group }
   class { monit: admin => $monit_admin, interval => $monit_interval }
 

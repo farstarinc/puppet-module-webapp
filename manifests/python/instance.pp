@@ -30,8 +30,6 @@ define webapp::python::instance($domain,
 
   python::venv::isolate { $venv:
     ensure => $ensure,
-    owner => $owner,
-    group => $group,
     requirements => $requirements ? {
       true => "$src/requirements.txt",
       default => undef,
