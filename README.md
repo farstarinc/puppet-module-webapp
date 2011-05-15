@@ -8,6 +8,12 @@ Tested on Debian GNU/Linux 6.0 Squeeze. Patches for other
 operating systems welcome.
 
 
+TODO
+----
+
+* Define dependencies between all the submodules.
+
+
 Installation
 ------------
 
