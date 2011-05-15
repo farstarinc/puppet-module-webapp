@@ -48,6 +48,7 @@ define webapp::python::instance($domain,
   $reload = "/etc/init.d/gunicorn-$name reload"
 
   monit::monitor { "gunicorn-$name":
+    ensure => $ensure,
     pidfile => $pidfile,
     socket => $socket,
     checks => ["if totalmem > 300 MB for 2 cycles then exec \"$reload\"",
