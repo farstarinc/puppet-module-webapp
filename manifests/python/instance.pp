@@ -8,7 +8,9 @@ define webapp::python::instance($domain,
                                 $wsgi_module="",
                                 $django=false,
                                 $requirements=false,
-                                $workers=1) {
+                                $workers=1,
+                                $monit_memory_limit=300,
+                                $monit_cpu_limit=50) {
 
   $venv = "${webapp::python::venv_root}/$name"
   $src = "${webapp::python::src_root}/$name"
@@ -51,8 +53,8 @@ define webapp::python::instance($domain,
     ensure => $ensure,
     pidfile => $pidfile,
     socket => $socket,
-    checks => ["if totalmem > 300 MB for 2 cycles then exec \"$reload\"",
-               "if totalmem > 300 MB for 3 cycles then restart",
-               "if cpu > 50% for 2 cycles then alert"],
+    checks => ["if totalmem > $monit_memory_limit for 2 cycles then exec \"$reload\"",
+               "if totalmem > $monit_memory_limit MB for 3 cycles then restart",
+               "if cpu > ${monit_cpu_limit}% for 2 cycles then alert"],
   }
 }

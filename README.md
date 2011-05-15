@@ -76,6 +76,16 @@ inside the virtualenv, and Monit watching the Gunicorn processes:
       wsgi_module => "blog:app",
     }
 
+You should tweak how Monit is watching your Gunicorn process according to your
+application:
+
+    webapp::python::instance { "blog":
+      domain => "blog.uggedal.com",
+      wsgi_module => "blog:app",
+      monit_memory_limit => 300, # In MB
+      monit_cpu_limit => 50, # In %
+    }
+
 You can provide domain aliases which Nginx redirects to your main domain:
 
     webapp::python::instance { "blog":
@@ -92,8 +102,8 @@ If your application is busy you can increase the amount of Gunicorn workers:
       workers => 4,
     }
 
-Django applications does not use the `wsgi_module`, but enabled by using the
-`django` flag:
+Django applications does not use the `wsgi_module`, but are enabled by using
+the `django` flag:
 
     webapp::python::instance { "cms":
       domain => "cms.uggedal.com",
