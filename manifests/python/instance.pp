@@ -28,6 +28,7 @@ define webapp::python::instance($domain,
     upstreams => ["unix:${socket}"],
     owner => $owner,
     group => $group,
+    require => Python::Gunicorn::Instance[$name],
   }
 
   python::venv::isolate { $venv:
@@ -45,6 +46,7 @@ define webapp::python::instance($domain,
     wsgi_module => $wsgi_module,
     django => $django,
     workers => $workers,
+    require => Python::Venv::Isolate[$name],
   }
 
   $reload = "/etc/init.d/gunicorn-$name reload"
@@ -56,5 +58,6 @@ define webapp::python::instance($domain,
     checks => ["if totalmem > $monit_memory_limit for 2 cycles then exec \"$reload\"",
                "if totalmem > $monit_memory_limit MB for 3 cycles then restart",
                "if cpu > ${monit_cpu_limit}% for 2 cycles then alert"],
+    require => Python::Gunicorn::Instance[$name],
   }
 }

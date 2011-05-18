@@ -11,7 +11,7 @@ operating systems welcome.
 TODO
 ----
 
-* Define dependencies between all the submodules.
+* Add proper mediaroot and mediaprefix support and document it.
 
 
 Installation
