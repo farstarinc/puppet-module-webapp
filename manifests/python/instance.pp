@@ -46,7 +46,7 @@ define webapp::python::instance($domain,
     wsgi_module => $wsgi_module,
     django => $django,
     workers => $workers,
-    require => Python::Venv::Isolate[$name],
+    require => Python::Venv::Isolate[$venv],
   }
 
   $reload = "/etc/init.d/gunicorn-$name reload"
