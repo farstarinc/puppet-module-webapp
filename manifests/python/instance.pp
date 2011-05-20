@@ -46,7 +46,14 @@ define webapp::python::instance($domain,
     wsgi_module => $wsgi_module,
     django => $django,
     workers => $workers,
-    require => Python::Venv::Isolate[$venv],
+    require => $ensure ? {
+      'present' => Python::Venv::Isolate[$venv],
+      default => undef,
+    },
+    before => $ensure ? {
+      'absent' => Python::Venv::Isolate[$venv],
+      default => undef,
+    },
   }
 
   $reload = "/etc/init.d/gunicorn-$name reload"
@@ -58,6 +65,13 @@ define webapp::python::instance($domain,
     checks => ["if totalmem > $monit_memory_limit MB for 2 cycles then exec \"$reload\"",
                "if totalmem > $monit_memory_limit MB for 3 cycles then restart",
                "if cpu > ${monit_cpu_limit}% for 2 cycles then alert"],
-    require => Python::Gunicorn::Instance[$name],
+    require => $ensure ? {
+      'present' => Python::Gunicorn::Instance[$name],
+      default => undef,
+    },
+    before => $ensure ? {
+      'absent' => Python::Gunicorn::Instance[$name],
+      default => undef,
+    },
   }
 }
