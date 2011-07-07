@@ -116,6 +116,14 @@ the `django` flag:
       django => true,
     }
 
+You can optionally provide a specific settings file to use with Django:
+
+    webapp::python::instance { "cms":
+      domain => "cms.uggedal.com",
+      django => true,
+      django_settings => "settings_production.py",
+    }
+
 Puppet can manage installation of requirements from a `requirements.txt`
 inside your source directory:
 
