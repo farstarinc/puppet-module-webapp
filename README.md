@@ -132,3 +132,12 @@ inside your source directory:
       django => true,
       requirements => true,
     }
+
+If your requirements file isn't named `requirements.txt` you can provide
+a name as well:
+
+    webapp::python::instance { "cms":
+      domain => "cms.uggedal.com",
+      django => true,
+      requirements => "requirements_production.txt",
+    }

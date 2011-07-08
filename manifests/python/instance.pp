@@ -36,7 +36,8 @@ define webapp::python::instance($domain,
     ensure => $ensure,
     requirements => $requirements ? {
       true => "$src/requirements.txt",
-      default => undef,
+      false => undef,
+      default => "$src/$requirements",
     },
   }
 
