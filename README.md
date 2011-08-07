@@ -8,12 +8,6 @@ Tested on Debian GNU/Linux 6.0 Squeeze and Ubuntu 10.4 LTS with
 Puppet 2.6. Patches for other operating systems welcome.
 
 
-TODO
-----
-
-* Add proper mediaroot and mediaprefix support and document it.
-
-
 Installation
 ------------
 
@@ -140,4 +134,26 @@ a name as well:
       domain => "cms.uggedal.com",
       django => true,
       requirements => "requirements_production.txt",
+    }
+
+Provide a URL media prefix and media root directory if you have a
+media directory of static files which should be served directly by
+Nginx and not by your application servers. These files will be
+cached indefinitely:
+
+    webapp::python::instance { "cms":
+      domain => "cms.uggedal.com",
+      django => true,
+      mediaprefix => "/media",
+      mediaroot => "/usr/local/src/cms/media",
+    }
+
+If you provide a relative `mediaroot` it will be relative to the
+`/var/www/$name` directory:
+
+    webapp::python::instance { "blog":
+      domain => "blog.uggedal.com",
+      wsgi_module => "blog:app",
+      mediaprefix => "/static",
+      mediaroot => "files/static",
     }
