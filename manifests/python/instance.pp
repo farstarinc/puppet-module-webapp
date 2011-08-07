@@ -1,8 +1,6 @@
 define webapp::python::instance($domain,
                                 $ensure=present,
                                 $aliases=[],
-                                $owner="www-data",
-                                $group="www-data",
                                 $mediaroot="",
                                 $mediaprefix="",
                                 $wsgi_module="",
@@ -18,6 +16,9 @@ define webapp::python::instance($domain,
 
   $pidfile = "${python::gunicorn::rundir}/${name}.pid"
   $socket = "${python::gunicorn::rundir}/${name}.sock"
+
+  $owner = $webapp::python::owner
+  $group = $webapp::python::group
 
   nginx::site { $name:
     ensure => $ensure,
