@@ -20,6 +20,12 @@ define webapp::python::instance($domain,
   $owner = $webapp::python::owner
   $group = $webapp::python::group
 
+  file { $src:
+    ensure => directory,
+    owner => $owner,
+    group => $group,
+  }
+
   nginx::site { $name:
     ensure => $ensure,
     domain => $domain,
