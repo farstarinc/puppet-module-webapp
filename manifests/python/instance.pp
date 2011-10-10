@@ -1,18 +1,25 @@
 define webapp::python::instance($domain,
                                 $ensure=present,
                                 $aliases=[],
-                                $mediaroot="",
-                                $mediaprefix="",
+                                $static_dirs=[],
                                 $wsgi_module="",
                                 $django=false,
                                 $django_settings="",
                                 $requirements=false,
                                 $workers=1,
+                                $src="",
+                                $venv="",
                                 $monit_memory_limit=300,
-                                $monit_cpu_limit=50) {
+                                $monit_cpu_limit=50,
+                                $upstart=false) {
+  
+  if (!$src) {
+      $src = "${webapp::python::src_root}/$name"
+  }
 
-  $venv = "${webapp::python::venv_root}/$name"
-  $src = "${webapp::python::src_root}/$name"
+  if (!$venv) {
+      $venv = "${webapp::python::venv_root}/$name"
+  }
 
   $pidfile = "${python::gunicorn::rundir}/${name}.pid"
   $socket = "${python::gunicorn::rundir}/${name}.sock"
@@ -26,17 +33,18 @@ define webapp::python::instance($domain,
     group => $group,
   }
 
+  $site_root = "${nginx::root}/${name}"
+    
   nginx::site { $name:
     ensure => $ensure,
     domain => $domain,
     aliases => $aliases,
-    root => "/var/www/$name",
-    mediaroot => $mediaroot,
-    mediaprefix => $mediaprefix,
+    root => $site_root,
+    static_dirs => $static_dirs,
     upstreams => ["unix:${socket}"],
     owner => $owner,
     group => $group,
-    require => Python::Gunicorn::Instance[$name],
+    #require => Python::Gunicorn::Instance[$name],
   }
 
   python::venv::isolate { $venv:
@@ -64,9 +72,14 @@ define webapp::python::instance($domain,
       'absent' => Python::Venv::Isolate[$venv],
       default => undef,
     },
+    upstart => $upstart,
   }
 
-  $reload = "/etc/init.d/gunicorn-$name reload"
+  $reload = $upstart ? {
+    false => "/etc/init.d/gunicorn-${name} reload",
+    true => "service gunicorn-$name reload",
+    default => "service $upstart reload"
+  }
 
   monit::monitor { "gunicorn-$name":
     ensure => $ensure,
