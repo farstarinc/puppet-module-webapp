@@ -9,8 +9,7 @@ define webapp::python::instance($domain,
                                 $workers=1,
                                 $src="",
                                 $venv="",
-                                $monit_memory_limit=300,
-                                $monit_cpu_limit=50,
+                                $init=true,
                                 $upstart=false) {
   
   if (!$src) {
@@ -72,29 +71,32 @@ define webapp::python::instance($domain,
       'absent' => Python::Venv::Isolate[$venv],
       default => undef,
     },
+    init => $init,
     upstart => $upstart,
   }
 
-  $reload = $upstart ? {
-    false => "/etc/init.d/gunicorn-${name} reload",
-    true => "service gunicorn-$name reload",
-    default => "service $upstart reload"
-  }
-
-  monit::monitor { "gunicorn-$name":
-    ensure => $ensure,
-    pidfile => $pidfile,
-    socket => $socket,
-    checks => ["if totalmem > $monit_memory_limit MB for 2 cycles then exec \"$reload\"",
-               "if totalmem > $monit_memory_limit MB for 3 cycles then restart",
-               "if cpu > ${monit_cpu_limit}% for 2 cycles then alert"],
-    require => $ensure ? {
-      'present' => Python::Gunicorn::Instance[$name],
-      default => undef,
-    },
-    before => $ensure ? {
-      'absent' => Python::Gunicorn::Instance[$name],
-      default => undef,
-    },
-  }
+  # Disabling monit for now
+  #
+  #$reload = $upstart ? {
+  #  false => "/etc/init.d/gunicorn-${name} reload",
+  #  true => "service gunicorn-$name reload",
+  #  default => "service $upstart reload"
+  #}
+  #
+  #monit::monitor { "gunicorn-$name":
+  #  ensure => $ensure,
+  #  pidfile => $pidfile,
+  #  socket => $socket,
+  #  checks => ["if totalmem > $monit_memory_limit MB for 2 cycles then exec \"$reload\"",
+  #             "if totalmem > $monit_memory_limit MB for 3 cycles then restart",
+  #             "if cpu > ${monit_cpu_limit}% for 2 cycles then alert"],
+  #  require => $ensure ? {
+  #    'present' => Python::Gunicorn::Instance[$name],
+  #    default => undef,
+  #  },
+  #  before => $ensure ? {
+  #    'absent' => Python::Gunicorn::Instance[$name],
+  #    default => undef,
+  #  },
+  #}
 }

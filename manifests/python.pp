@@ -28,11 +28,10 @@ class webapp::python($ensure=present,
     group => $group
   }
 
-  class { monit:
-    ensure => $ensure,
-    admin => $monit_admin,
-    interval => $monit_interval
-  }
+  #class { monit:
+  #  ensure => $ensure,
+  #  admin => $monit_admin,
+  #  interval => $monit_interval
+  #}
 
 }
-
